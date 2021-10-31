@@ -1,6 +1,6 @@
 questions = [
   {
-    question: "They were late because ____ train was late.",
+    question: "They were late because ____ train was delayed.",
     choices: ["their", "they're", "there", "thems"],
     answer: "their",
   },
@@ -10,7 +10,7 @@ questions = [
     answer: "there",
   },
   {
-    question: "Don't worry, _____ not going to bother you",
+    question: "Don't worry about the dogs, _____ not going to bother you.",
     choices: ["their", "they're", "there", "thems"],
     answer: "they're",
   },
@@ -21,7 +21,7 @@ questions = [
     answer: "future",
   },
   {
-    question: "In what tense is the following sentence: I have been waiting",
+    question: "In what tense is the following sentence: I have been waiting.",
     choices: [
       "present perfect",
       "future",
