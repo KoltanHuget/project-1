@@ -14,11 +14,10 @@ const {
 } = require("../app");
 const router = express.Router();
 const { findRoomById, updateRoom, createCopy } = require("../rooms");
-
-router.use(express.static("public"));
+const path = require("path");
 
 router.get("/", (req, res) => {
-  res.sendFile("index.html");
+  res.sendFile(path.join(__dirname, "../public/home.html"));
 });
 
 router.get("/startGame", async (req, res) => {
