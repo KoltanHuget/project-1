@@ -11,9 +11,18 @@ const {
   createQuestionPrompt,
   displayPlayerInventory,
   fight,
+  getObjectToSave,
+  loadGame,
+  displayPlayerStats,
 } = require("../app");
 const router = express.Router();
-const { findRoomById, updateRoom, createCopy } = require("../rooms");
+const {
+  findRoomById,
+  updateRoom,
+  createCopy,
+  saveGameToDatabase,
+  loadGameFromDatabase,
+} = require("../model/rooms");
 const path = require("path");
 
 router.get("/", (req, res) => {
@@ -61,6 +70,28 @@ router.get("/fight", (req, res) => {
   }
   let userSubmission = req.query.submit;
   return res.send(fight(userSubmission));
+});
+
+router.get("/save", async (req, res) => {
+  object = await getObjectToSave();
+  savedId = await saveGameToDatabase(object);
+  res.send(`Use the id ${savedId} to load and resume this game.`);
+});
+
+router.get("/load", async (req, res) => {
+  let gameId = req.query.id;
+  let loadedGame = await loadGameFromDatabase(gameId);
+  await loadGame(loadedGame);
+  let description = await describeRoom();
+  res.send(description);
+});
+
+router.get("/viewHealth", (req, res) => {
+  stats = displayPlayerStats();
+  if (stats) {
+    return res.send(stats);
+  }
+  return res.send("You must start the game first.");
 });
 
 module.exports = router;

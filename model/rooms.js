@@ -48,7 +48,7 @@ async function saveCopy() {
 
 async function createCopy() {
   new_array = [];
-  for (let i = 1; i < 16; i++) {
+  for (let i = 1; i < 17; i++) {
     let roomToAdd = await findRoomByNumber(i);
     delete roomToAdd._id;
     await new_array.push(roomToAdd);
@@ -68,7 +68,21 @@ async function updateRoom(id, newData) {
   return roomsCollection.updateOne({ _id: ObjectId(id) }, { $set: newData });
 }
 
+async function saveGameToDatabase(objectToSave) {
+  let savedGamesCollection = await db.getCollection("savedGames");
+  let insertResult = await savedGamesCollection.insertOne(objectToSave);
+  return insertResult.insertedId;
+}
+
+async function loadGameFromDatabase(id) {
+  let savedGamesCollection = await db.getCollection("savedGames");
+  let gameToLoad = await savedGamesCollection.findOne({ _id: ObjectId(id) });
+  return gameToLoad;
+}
+
 module.exports = {
   findRoomById,
   createCopy,
+  saveGameToDatabase,
+  loadGameFromDatabase,
 };
