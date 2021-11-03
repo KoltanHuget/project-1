@@ -16,16 +16,23 @@ let currentEnemy;
 let isFightInProgress = false;
 
 async function startGame() {
+  // reset global variables
   isFightInProgress = false;
   rooms = await createCopy();
+  console.log("Rooms have been reset");
   currentRoom = await findRoomByNumber(1);
+  console.log(`currentRoom set to ${currentRoom}`);
   questions = require("./model/questions");
+  console.log(`${questions.length} questions have been retrieved.`);
   currentEnemy = null;
+  console.log(`currentEnemy set to ${currentEnemy}`);
   currentQuestion = null;
+  console.log(`currentQuestion set to ${currentQuestion}`);
   player.hp = 500;
   player.inventory = [];
   player.attack = 100;
   player.armor = 0;
+  console.log(`player reset to ${player}`);
   let roomDescription = await describeRoom(currentRoom);
   return roomDescription;
 }
@@ -33,9 +40,8 @@ async function startGame() {
 function pickRandomQuestion() {
   let randomId = Math.floor(Math.random() * questions.length);
   let randomQuestion = questions[randomId];
-  console.log(questions.length);
   questions.splice(randomId, 1);
-  console.log(questions.length);
+  console.log("Question removed from questions array");
   return randomQuestion;
 }
 
@@ -46,6 +52,7 @@ async function findRoomByNumber(number) {
 
 async function move(door) {
   newRoom = await findRoomByNumber(door.goesTo);
+  console.log(`Player moved to ${newRoom.name}`);
   return newRoom;
 }
 
@@ -91,6 +98,8 @@ async function checkMove(direction) {
       return `The door is locked and you don't have the key!<br/>${errorMessage}`;
     }
   }
+  console.log(currentRoom.doors);
+  return "You can't move that way; there's no door.";
 }
 
 function shuffleArray(array) {
@@ -108,8 +117,11 @@ function describeRoom() {
   if (currentRoom.enemies) {
     for (enemy of currentRoom.enemies) {
       currentEnemy = getEnemy();
+      console.log(`currentEnemy set to ${currentEnemy.name}`);
+      console.log(`isFightInProgress set to ${isFightInProgress}`);
       isFightInProgress = true;
-      return `You have encountered ${enemy}. Prepare for lexical battle! Use /fight to continue.`;
+      questionPrompt = fight();
+      return `You have encountered ${enemy}. Prepare for lexical battle! <br><br>Use /fight?submit=your+answer+here to submit an answer.<br><br>${questionPrompt}`;
     }
   }
   if (currentRoom.items) {
@@ -122,7 +134,9 @@ function describeRoom() {
         description += `Description: ${item.description}<br>`;
       }
       player.addToInventory(item);
+      console.log(`${item.name} added to inventory`);
       currentRoom.items = currentRoom.items.filter((i) => !item);
+      console.log(`${item.name} removed from map`);
     }
   }
   for (door of currentRoom.doors) {
@@ -161,7 +175,9 @@ function getEnemy() {
 
 function createQuestionPrompt() {
   currentQuestion = pickRandomQuestion();
+  console.log(`currentQuestion changed to ${currentQuestion.question}`);
   shuffledChoices = shuffleArray(currentQuestion.choices);
+  console.log(`Answer choices shuffled`);
   questionPrompt = `<h2>Question</h2><p>${currentQuestion.question}</p>
   <h2>Choices</h2><p>${shuffledChoices.join(", ")}</p>
   <h2>Instructions</h2><p> Use /fight?submit=your+answer+here to answer the question.</p>`;
@@ -172,15 +188,26 @@ function displayPlayerInventory() {
   return player.inventory;
 }
 
-function fight(userSubmission) {
+function fight(userSubmission = "init") {
+  if (!isFightInProgress) {
+    return "Error. No fight in progress. Use /describeRoom to describe the room you're in.";
+  }
+  if (userSubmission === "init") {
+    questionPrompt = createQuestionPrompt();
+    return questionPrompt;
+  }
+
   if (userSubmission === currentQuestion.answer) {
-    console.log(currentEnemy);
+    console.log("player answered question correctly");
     player.attackEnemy(currentEnemy);
     if (currentEnemy.hp <= 0) {
       if (currentEnemy.name === "King Snoot") {
+        currentRoom.enemies = [];
+        console.log("player wins game");
         return "You have defeated King Snoot and have thus acceded to his former throne! Congratulations!";
       }
       isFightInProgress = false;
+      console.log(`isFightInProgress set to ${isFightInProgress}`);
       currentRoom.enemies = [];
       roomDescription = describeRoom(currentRoom);
       currentRoom.enemies = [];
@@ -193,12 +220,13 @@ function fight(userSubmission) {
     questionPrompt = createQuestionPrompt();
     return `${
       currentEnemy.name
-    } says '${currentEnemy.congratulate()}'<br>${explanation}<br><br> Your attack did ${
+    } says '${currentEnemy.congratulate()}'<br><br>${explanation}<br><br> Your attack did ${
       player.attack
     } damage. Enemy still has ${
       currentEnemy.hp
     } hp remaining.<br><br>Next question:<br><br>${questionPrompt}`;
   }
+  console.log("player answered incorrectly.");
   currentEnemy.attackPlayer(player);
   console.log(player.hp);
   if (player.hp <= 0) {
@@ -244,6 +272,7 @@ function loadGame(object) {
   player.hp = object.player.hp;
   player.armor = object.player.armor;
   player.inventory = object.player.inventory;
+  console.log("A saved game has been loaded.");
 }
 
 function displayPlayerStats() {

@@ -65,15 +65,16 @@ router.get("/viewInventory", (req, res) => {
 
 router.get("/fight", (req, res) => {
   if (!req.query.submit) {
-    questionPrompt = createQuestionPrompt();
-    return res.send(questionPrompt);
+    return res.send(
+      "Please submit an answer using /fight?submit=your+answer+here"
+    );
   }
-  let userSubmission = req.query.submit;
-  return res.send(fight(userSubmission));
+  return res.send(fight(req.query.submit));
 });
 
 router.get("/save", async (req, res) => {
   object = await getObjectToSave();
+  console.log(`Object ${object} saved.`);
   savedId = await saveGameToDatabase(object);
   res.send(`Use the id ${savedId} to load and resume this game.`);
 });

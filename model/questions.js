@@ -41,6 +41,7 @@ questions = [
       "In what tense is the following sentence: I will be there on Monday.",
     choices: ["future", "present", "past", "past perfect", "future perfect"],
     answer: "future",
+    explanation: "Answer: future tense.",
   },
   {
     question: "In what tense is the following sentence: I have been waiting.",
@@ -53,6 +54,7 @@ questions = [
       "future perfect",
     ],
     answer: "present perfect",
+    explanation: "Answer: present perfect.",
   },
   {
     question:
@@ -63,10 +65,10 @@ questions = [
       "comma",
       "apostrophe",
       "semicolon",
-      "em-dash",
       "en-dash",
+      "hyphen",
     ],
-    answer: "future",
+    answer: "colon",
     explanation:
       "The first of a colon's five uses is to link two separate clauses by indicating a step forward from the first to the second: the step may be from an introduction to a main theme, from a cause to an effect, from a general statement to a particular instance, or from a premise to a conclusion.",
   },
