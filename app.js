@@ -125,7 +125,7 @@ function describeRoom() {
       console.log(`isFightInProgress set to ${isFightInProgress}`);
       isFightInProgress = true;
       questionPrompt = fight();
-      return `You have encountered ${enemy}. Prepare for lexical battle! <br><br>Use /fight?submit=your+answer+here to submit an answer.<br><br>${questionPrompt}`;
+      return `You have encountered ${enemy}. Prepare for lexical battle! <br><br>Submit your answer by clicking one of the choices below.<br><br>${questionPrompt}`;
     }
   }
   if (currentRoom.items) {
@@ -144,7 +144,17 @@ function describeRoom() {
     }
   }
   for (door of currentRoom.doors) {
-    description += "There is a door to the " + door.direction + ".<br/>";
+    let link;
+    if (door.direction === "north") {
+      link = "North";
+    } else if (door.direction === "south") {
+      link = "South";
+    } else if (door.direction === "east") {
+      link = "East";
+    } else {
+      link = "West";
+    }
+    description += `There is a door to the <a href=/move${link}>${door.direction}</a>.<br/>`;
   }
   return `<h1>${currentRoom.name}</h1>
   <p>${currentRoom.description}</p>
@@ -177,14 +187,25 @@ function getEnemy() {
   return enemyToFight;
 }
 
+function createLinksForAnswerChoices(choices) {
+  let htmlString = "";
+  let link;
+  for (answerChoice of choices) {
+    link = answerChoice.replace(" ", "+");
+    htmlString += `<a href=/fight?submit=${link}>${answerChoice}</a>, `;
+  }
+  return htmlString;
+}
+
 function createQuestionPrompt() {
   currentQuestion = pickRandomQuestion();
   console.log(`currentQuestion changed to ${currentQuestion.question}`);
   shuffledChoices = shuffleArray(currentQuestion.choices);
   console.log(`Answer choices shuffled`);
+  answerChoicesString = createLinksForAnswerChoices(shuffledChoices);
   questionPrompt = `<h2>Question</h2><p>${currentQuestion.question}</p>
-  <h2>Choices</h2><p>${shuffledChoices.join(", ")}</p>
-  <h2>Instructions</h2><p> Use /fight?submit=your+answer+here to answer the question.</p>`;
+  <h2>Choices</h2><p>${answerChoicesString}</p>
+  <h2>Instructions</h2><p>Submit your answer by clicking on the choices below.</p>`;
   return questionPrompt;
 }
 
@@ -242,13 +263,11 @@ function fight(userSubmission = "init") {
   console.log(player.hp);
   if (player.hp <= 0) {
     // if player has been killed
-    return `${
-      currentEnemy.name
-    } says '${currentEnemy.insult()}'<br><br>${explanation}<br>${
+    return `${currentEnemy.name} says '${currentEnemy.insult()}'<br><br>${
       currentQuestion.explanation
     }<br><br> The enemy's attack did ${
       currentEnemy.attack - player.armor
-    } damage. You died!<br><br>Use /startGame to start a new game.`;
+    } damage. You died!<br><br>Click /startGame to start a new game.`;
   }
   // if player still alive
   let explanation = currentQuestion.explanation;

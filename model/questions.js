@@ -515,7 +515,7 @@ questions = [
     question:
       "Fill in the blank with the correct word: The team members ____ all their strength and won the tug-of-war.",
     choices: ["exerted", "asserted", "inserted", "flirted"],
-    answer: "exert",
+    answer: "exerted",
     explanation:
       "Writers sometimes confuse these words. Assert = (1) to state with force and confidence; (2) to exercise or demonstrate (authority, a right, a privilege, etc.); or (3) to behave or speak forcefully. Exert = (1) to put forth or apply (energy, force, strength, etc.) to something; or (2) to make a physical or mental effort.",
   },
@@ -752,7 +752,7 @@ questions = [
   {
     question:
       "It has ____ me when I have seen billboards that contained misspelled words, punctuation errors, and other things that are fundamental to the English language.",
-    choices: ["irritated", "aggravated"],
+    choices: ["irritated", "aggravated", "either is acceptable"],
     answer: "irritated",
     explanation:
       "Strictly speaking, 'aggravate' means 'to make worse; exacerbate' and shouldn't be used to mean 'irritate' or 'annoy'.",
