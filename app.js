@@ -1,4 +1,8 @@
-const { createCopy } = require("./model/rooms");
+const {
+  createCopy,
+  saveGameToDatabase,
+  loadGameFromDatabase,
+} = require("./model/rooms");
 const {
   noviceSnoot,
   intermediateSnoot,
@@ -198,14 +202,19 @@ function fight(userSubmission = "init") {
   }
 
   if (userSubmission === currentQuestion.answer) {
+    // if player answered correctly
     console.log("player answered question correctly");
     player.attackEnemy(currentEnemy);
     if (currentEnemy.hp <= 0) {
+      // if you've defeated any enemy
       if (currentEnemy.name === "King Snoot") {
+        // if you've just defeated King Snoot
         currentRoom.enemies = [];
         console.log("player wins game");
+        isFightInProgress = false;
         return "You have defeated King Snoot and have thus acceded to his former throne! Congratulations!";
       }
+      // if you've defeated any enemy other than King Snoot
       isFightInProgress = false;
       console.log(`isFightInProgress set to ${isFightInProgress}`);
       currentRoom.enemies = [];
@@ -216,6 +225,7 @@ function fight(userSubmission = "init") {
       }<br><br>You defeated ${currentEnemy.name}. ${currentEnemy.die()}<br>
       ${roomDescription}`;
     }
+    // if correct and enemy still alive
     let explanation = currentQuestion.explanation;
     questionPrompt = createQuestionPrompt();
     return `${
@@ -226,10 +236,12 @@ function fight(userSubmission = "init") {
       currentEnemy.hp
     } hp remaining.<br><br>Next question:<br><br>${questionPrompt}`;
   }
+  // player answered incorrectly
   console.log("player answered incorrectly.");
   currentEnemy.attackPlayer(player);
   console.log(player.hp);
   if (player.hp <= 0) {
+    // if player has been killed
     return `${
       currentEnemy.name
     } says '${currentEnemy.insult()}'<br><br>${explanation}<br>${
@@ -238,6 +250,7 @@ function fight(userSubmission = "init") {
       currentEnemy.attack - player.armor
     } damage. You died!<br><br>Use /startGame to start a new game.`;
   }
+  // if player still alive
   let explanation = currentQuestion.explanation;
   questionPrompt = createQuestionPrompt();
   return `${
@@ -249,8 +262,12 @@ function fight(userSubmission = "init") {
   } hp remaining.<br><br>Next question:<br><br>${questionPrompt}`;
 }
 
-function getObjectToSave() {
-  return {
+async function saveGame() {
+  if (isFightInProgress) {
+    // can't save while game in progress
+    return false;
+  }
+  savedId = await saveGameToDatabase({
     rooms,
     currentRoom,
     currentQuestion,
@@ -258,20 +275,22 @@ function getObjectToSave() {
     currentEnemy,
     questions,
     player,
-  };
+  });
+  return savedId;
 }
 
-function loadGame(object) {
-  rooms = object.rooms;
-  currentRoom = object.currentRoom;
-  currentQuestion = object.currentQuestion;
-  isFightInProgress = object.isFightInProgress;
-  currentEnemy = object.currentEnemy;
-  questions = object.questions;
-  player.attack = object.player.attack;
-  player.hp = object.player.hp;
-  player.armor = object.player.armor;
-  player.inventory = object.player.inventory;
+async function loadGame(id) {
+  loadedGame = await loadGameFromDatabase(id);
+  rooms = loadedGame.rooms;
+  currentRoom = loadedGame.currentRoom;
+  currentQuestion = loadedGame.currentQuestion;
+  isFightInProgress = loadedGame.isFightInProgress;
+  currentEnemy = loadedGame.currentEnemy;
+  questions = loadedGame.questions;
+  player.attack = loadedGame.player.attack;
+  player.hp = loadedGame.player.hp;
+  player.armor = loadedGame.player.armor;
+  player.inventory = loadedGame.player.inventory;
   console.log("A saved game has been loaded.");
 }
 
@@ -294,7 +313,7 @@ module.exports = {
   createQuestionPrompt,
   displayPlayerInventory,
   fight,
-  getObjectToSave,
+  saveGame,
   loadGame,
   displayPlayerStats,
 };

@@ -1,28 +1,15 @@
 const express = require("express");
 const {
   startGame,
-  pickRandomQuestion,
-  findRoomByNumber,
-  move,
   checkMove,
-  shuffleArray,
   describeRoom,
-  getEnemy,
-  createQuestionPrompt,
   displayPlayerInventory,
   fight,
-  getObjectToSave,
+  saveGame,
   loadGame,
   displayPlayerStats,
 } = require("../app");
 const router = express.Router();
-const {
-  findRoomById,
-  updateRoom,
-  createCopy,
-  saveGameToDatabase,
-  loadGameFromDatabase,
-} = require("../model/rooms");
 const path = require("path");
 
 router.get("/", (req, res) => {
@@ -73,16 +60,18 @@ router.get("/fight", (req, res) => {
 });
 
 router.get("/save", async (req, res) => {
-  object = await getObjectToSave();
-  console.log(`Object ${object} saved.`);
-  savedId = await saveGameToDatabase(object);
-  res.send(`Use the id ${savedId} to load and resume this game.`);
+  savedId = await saveGame();
+  if (savedId) {
+    return res.send(
+      `Game saved. Use the id ${savedId} to load and resume this game.`
+    );
+  }
+  return res.send("You can't save while a fight is in progress.");
 });
 
 router.get("/load", async (req, res) => {
   let gameId = req.query.id;
-  let loadedGame = await loadGameFromDatabase(gameId);
-  await loadGame(loadedGame);
+  await loadGame(gameId);
   let description = await describeRoom();
   res.send(description);
 });
