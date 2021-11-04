@@ -191,7 +191,7 @@ function createLinksForAnswerChoices(choices) {
   let htmlString = "";
   let link;
   for (answerChoice of choices) {
-    link = answerChoice.replace(" ", "+");
+    link = answerChoice.replace(/ /g, "+");
     htmlString += `<a href=/fight?submit=${link}>${answerChoice}</a>, `;
   }
   return htmlString;
@@ -233,7 +233,10 @@ function fight(userSubmission = "init") {
         currentRoom.enemies = [];
         console.log("player wins game");
         isFightInProgress = false;
-        return "You have defeated King Snoot and have thus acceded to his former throne! Congratulations!";
+        return `<h1>Victory!</h1>
+        <p>You have defeated King Snoot and have thus acceded to his former throne! Congratulations!</p>
+        <p>Click <a href=/describeRoom>here</a> to describe current room. </p>
+        <p>Click <a href=/startGame>here</a> to start a new game. </p>`;
       }
       // if you've defeated any enemy other than King Snoot
       isFightInProgress = false;

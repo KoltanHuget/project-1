@@ -374,7 +374,7 @@ questions = [
     ],
     answer: "em-dash",
     explanation:
-      "The em-dash be used to enclose a parenthetical remark and can often clarify a sentence that is clogged up with commas.",
+      "The em-dash can be used to enclose a parenthetical remark and can often clarify a sentence that is clogged up with commas.",
   },
   {
     question:
@@ -713,7 +713,7 @@ questions = [
   },
   {
     question: "The people ___ reach their sales target will get a reward.",
-    choices: ["this", "who", "which", "whom"],
+    choices: ["that", "who", "which", "whom"],
     answer: "who",
     explanation:
       "Use 'who' when talking about people; use 'that' when talking about things.",
